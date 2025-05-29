@@ -22,40 +22,51 @@ const App = () => {
   };
 
   const analyzeResume = async () => {
-    if (!jobDescription.trim() || !resumeText.trim()) {
-      setError('Please provide both job description and resume text');
-      return;
+  if (!jobDescription.trim() || !resumeText.trim()) {
+    setError('Please provide both job description and resume text');
+    return;
+  }
+
+  setLoading(true);
+  setError('');
+  setResults(null);
+
+  try {
+    const API_URL = import.meta.env.VITE_API_URL;
+    
+    console.log('API_URL from env:', API_URL);
+    
+    if (!API_URL || API_URL === 'undefined') {
+      throw new Error('VITE_API_URL environment variable is not set');
+    }
+    
+    const fullUrl = `${API_URL}/analyze`;
+    console.log('Making request to:', fullUrl);
+    
+    const response = await fetch(fullUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        job_description: jobDescription,
+        resume_text: resumeText,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    setLoading(true);
-    setError('');
-    setResults(null);
-
-    try {
-      const API_URL = import.meta.env.VITE_API_URL;
-      const response = await fetch(`${API_URL}/analyze`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          job_description: jobDescription,
-          resume_text: resumeText,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setResults(data);
-    } catch (err) {
-      setError(`Failed to analyze resume: ${err.message}. Make sure your FastAPI server is running on localhost:8000`);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const data = await response.json();
+    setResults(data);
+  } catch (err) {
+    console.error('Error details:', err);
+    setError(`Failed to analyze resume: ${err.message}`);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const getScoreColor = (score) => {
     if (score >= 80) return 'text-emerald-600';

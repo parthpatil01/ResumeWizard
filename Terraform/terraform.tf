@@ -330,7 +330,7 @@ resource "aws_launch_template" "backend" {
   name_prefix   = "${var.project_name}-backend-"
   description   = "Launch template for backend instances"
   image_id      = data.aws_ami.amazon_linux.id
-  instance_type = "t3.large"
+  instance_type = "m5.xlarge"
   key_name      = var.key_pair_resume_wizard
 
   vpc_security_group_ids = [aws_security_group.backend_ec2.id]
@@ -364,6 +364,7 @@ resource "aws_lb" "frontend" {
   subnets            = aws_subnet.public[*].id
 
   enable_deletion_protection = false
+  idle_timeout = 300
 
   tags = {
     Name        = "${var.project_name}-frontend-alb"
