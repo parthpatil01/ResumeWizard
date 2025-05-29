@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+requests
+pydantic
+python-dotenv
+urllib3<2

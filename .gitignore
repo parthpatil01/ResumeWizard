@@ -1,0 +1,8 @@
+Terraform/.terraform/
+Terraform/.terraform.lock.hcl
+Terraform/terraform.tfstate
+Terraform/terraform.tfstate.backup
+
+Frontend/node_modules/
+
+Backend/__pycache__/
