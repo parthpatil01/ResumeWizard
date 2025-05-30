@@ -1,23 +1,16 @@
 #!/bin/sh
+set -e
 
-echo "=== Starting Frontend Container ==="
-echo "VITE_API_URL environment variable: $VITE_API_URL"
-
-# Check if VITE_API_URL is provided
-if [ -z "$VITE_API_URL" ]; then
-    echo "Warning: VITE_API_URL environment variable is not set"
-    echo "The application may not work correctly"
-else
-    echo "Replacing placeholder with actual API URL: $VITE_API_URL"
-    
-    # Replace placeholder in all JavaScript files
-    find /usr/share/nginx/html -type f \( -name "*.js" -o -name "*.mjs" \) -exec sed -i "s|__RUNTIME_API_URL__|$VITE_API_URL|g" {} \;
-    
-    # Also check and replace in any JSON config files (if you have any)
-    find /usr/share/nginx/html -type f -name "*.json" -exec sed -i "s|__RUNTIME_API_URL__|$VITE_API_URL|g" {} \;
-    
-    echo "Replacement completed"
+# Validate environment variable
+if [ -z "${BACKEND_ALB_URL}" ]; then
+  echo "ERROR: BACKEND_ALB_URL environment variable not set!"
+  exit 1
 fi
 
+# Replace placeholder in Nginx config
+echo "Configuring backend ALB URL: ${BACKEND_ALB_URL}"
+envsubst '${BACKEND_ALB_URL}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+
+# Start Nginx
 echo "Starting Nginx..."
-nginx -g "daemon off;"
+exec nginx -g "daemon off;"

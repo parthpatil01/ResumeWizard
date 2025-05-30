@@ -19,7 +19,7 @@ server {
 
     # Proxy configuration for backend API
     location /analyze {
-        proxy_pass http://internal-webapp-backend-alb-1941902943.us-west-2.elb.amazonaws.com/analyze;
+        proxy_pass ${BACKEND_ALB_URL}/analyze;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

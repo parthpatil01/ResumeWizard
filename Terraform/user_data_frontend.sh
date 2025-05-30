@@ -7,10 +7,13 @@ service docker start
 usermod -a -G docker ec2-user
 systemctl enable docker
 
+# Install envsubst (part of gettext)
+yum install -y gettext
+
 # Pull and run your frontend Docker image
 docker run -d \
   -p 80:80 \
-  -e VITE_API_URL=${backend_alb_url} \
+  -e BACKEND_ALB_URL="${backend_alb_url}" \
   --restart always \
   ${docker_image}
 
