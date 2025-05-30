@@ -14,7 +14,7 @@ CONTAINER_ID=$(sudo docker run -d -p 11434:11434 ollama/ollama:latest)
 sleep 10
 
 # Pull llama model
-sudo docker exec $CONTAINER_ID ollama pull llama3.2:1b
+sudo docker exec $CONTAINER_ID ollama pull llama3.2
 
 # Install Python
 yum install -y python3 python3-pip

@@ -31,7 +31,7 @@ You are an expert career assistant. Compare the following resume with the job de
 
 1. A match score between 0 to 100, where 100 means perfect fit.
 2. Key skills and keywords missing in the resume that are present in the job description.
-3. Smart, realistic suggestions to improve the resume to increase the chances of getting an interview.
+3. Smart, realistic suggestions to improve the resume to increase the chances of getting an interview in 200 words or less, be precise but accurate.
 
 Respond strictly in this format:
 Score: <number>
