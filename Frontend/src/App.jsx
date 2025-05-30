@@ -1,5 +1,6 @@
 import { Upload, FileText, Briefcase, TrendingUp, AlertCircle, CheckCircle, Sparkles, Target, Brain, Zap } from 'lucide-react';
 import { useState } from 'react';
+import axios from 'axios';
 
 const App = () => {
   const [jobDescription, setJobDescription] = useState('');
@@ -22,51 +23,74 @@ const App = () => {
   };
 
   const analyzeResume = async () => {
-  if (!jobDescription.trim() || !resumeText.trim()) {
-    setError('Please provide both job description and resume text');
-    return;
-  }
-
-  setLoading(true);
-  setError('');
-  setResults(null);
-
-  try {
-    const API_URL = import.meta.env.VITE_API_URL;
-    
-    console.log('API_URL from env:', API_URL);
-    
-    if (!API_URL || API_URL === 'undefined') {
-      throw new Error('VITE_API_URL environment variable is not set');
+    if (!jobDescription.trim() || !resumeText.trim()) {
+      setError('Please provide both job description and resume text');
+      return;
     }
-    
-    const fullUrl = `${API_URL}/analyze`;
-    console.log('Making request to:', fullUrl);
-    
-    const response = await fetch(fullUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+
+    setLoading(true);
+    setError('');
+    setResults(null);
+
+    try {
+      // Using relative path since we're proxying through Nginx
+      const API_ENDPOINT = '/analyze';
+      console.log('Starting analysis request at:', new Date().toISOString());
+
+      // Create cancel token source for timeout handling
+      const source = axios.CancelToken.source();
+
+      // Set timeout for 290 seconds (just under ALB timeout)
+      const timeout = setTimeout(() => {
+        source.cancel('Request timed out after 290 seconds');
+        console.error('Request timed out at:', new Date().toISOString());
+      }, 290000);
+
+      const startTime = Date.now();
+
+      const response = await axios.post(API_ENDPOINT, {
         job_description: jobDescription,
         resume_text: resumeText,
-      }),
-    });
+      }, {
+        cancelToken: source.token,
+        timeout: 290000,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // For debugging:
+        // transformRequest: [(data) => {
+        //   console.log('Request payload:', data);
+        //   return JSON.stringify(data);
+        // }],
+      });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      clearTimeout(timeout);
+
+      const endTime = Date.now();
+      const duration = (endTime - startTime) / 1000;
+      console.log(`Request completed in ${duration} seconds`);
+
+      setResults(response.data);
+    } catch (err) {
+      console.error('Error details:', err);
+
+      if (axios.isCancel(err)) {
+        setError('Analysis took too long. Please try with a shorter resume or job description.');
+      } else if (err.response) {
+        // Server responded with error status
+        const errorMessage = err.response.data?.message || err.response.statusText;
+        setError(`Server error: ${err.response.status} - ${errorMessage}`);
+      } else if (err.request) {
+        // Request was made but no response received
+        setError('No response from server. Please check your network connection.');
+      } else {
+        // Other errors
+        setError(`Error: ${err.message}`);
+      }
+    } finally {
+      setLoading(false);
     }
-
-    const data = await response.json();
-    setResults(data);
-  } catch (err) {
-    console.error('Error details:', err);
-    setError(`Failed to analyze resume: ${err.message}`);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const getScoreColor = (score) => {
     if (score >= 80) return 'text-emerald-600';
