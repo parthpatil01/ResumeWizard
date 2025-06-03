@@ -126,10 +126,10 @@ const App = () => {
               </div>
             </div>
             <h1 className="text-6xl font-bold bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent mb-4">
-              Resume Wizard AI
+              Resume Wizard
             </h1>
             <p className="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              Unlock your career potential with AI-powered resume analysis and personalized optimization insights
+              AI-powered resume analysis and personalized optimization insights
             </p>
           </div>
 
@@ -147,7 +147,7 @@ const App = () => {
                   <textarea
                     value={jobDescription}
                     onChange={(e) => setJobDescription(e.target.value)}
-                    placeholder="Paste the job description here and watch the magic happen..."
+                    placeholder="Paste the job description here"
                     className="w-full h-72 p-4 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent resize-none transition-all duration-200 hover:bg-white/10"
                   />
                   <div className="absolute bottom-4 right-4 text-slate-400 text-sm">
@@ -171,7 +171,7 @@ const App = () => {
                   <textarea
                     value={resumeText}
                     onChange={(e) => setResumeText(e.target.value)}
-                    placeholder="Or paste your resume text here for instant analysis..."
+                    placeholder="Paste your resume text here for instant analysis"
                     className="w-full h-72 p-4 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-400 focus:border-transparent resize-none transition-all duration-200 hover:bg-white/10"
                   />
                   <div className="absolute bottom-4 right-4 text-slate-400 text-sm">
@@ -199,7 +199,7 @@ const App = () => {
                 ) : (
                   <>
                     <Brain className="h-6 w-6 mr-3 group-hover:animate-pulse" />
-                    <span className="text-lg">Analyze with AI Power</span>
+                    <span className="text-lg">Analyze </span>
                     <Zap className="h-5 w-5 ml-2 group-hover:animate-bounce" />
                   </>
                 )}
